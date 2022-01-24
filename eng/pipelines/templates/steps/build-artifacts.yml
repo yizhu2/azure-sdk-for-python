@@ -41,6 +41,10 @@ steps:
       versionSpec: '2.7'
 
   - script: |
+      Get-ChildItem -r $(Agent.ToolsDirectory)
+    displayName: Interrogate directory contents
+
+  - script: |
       pip install -r eng/ci_tools.txt
     displayName: 'Prep Py2 Environment'
 
@@ -111,6 +115,8 @@ steps:
   #   condition: and(succeeded(), ${{ parameters.BuildDocs }})
   #   inputs:
   #     BuildDropPath: $(Build.SourcesDirectory)/_docs
+
+
 
   - template: /eng/common/pipelines/templates/steps/publish-artifact.yml
     parameters:
