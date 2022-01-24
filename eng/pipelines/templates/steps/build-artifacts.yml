@@ -40,7 +40,7 @@ steps:
     inputs:
       versionSpec: '2.7'
 
-  - script: |
+  - pwsh: |
       Get-ChildItem -r $(Agent.ToolsDirectory)
     displayName: Interrogate directory contents
 
