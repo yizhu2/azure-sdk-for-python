@@ -36,6 +36,12 @@ steps:
       scriptPath: 'scripts/devops_tasks/use_pypy_version.py'
       arguments: '${{ parameters.versionSpec }}'
 
+  - script: |
+      sudo chmod -R +777 /opt/hostedtoolcache/PyPy/3.8.12/
+    displayName: Ensure PyPy pip is registered appropriately
+    condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
+
+
   - pwsh: |
       python -c "import sys; print(sys.executable)"
       python -m ensurepip --default-pip
