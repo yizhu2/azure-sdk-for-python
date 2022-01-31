@@ -44,6 +44,10 @@ steps:
       Get-ChildItem -r $(Agent.ToolsDirectory)
     displayName: Interrogate directory contents
 
+  - pwsh: |
+      Get-ChildItem -Force -Recurse -Path /opt/hostedtoolcache/PyPy/3.8.12/x64/
+    displayName: Interrogate bin dir
+
   - script: |
       pip install -r eng/ci_tools.txt
     displayName: 'Prep Py2 Environment'
