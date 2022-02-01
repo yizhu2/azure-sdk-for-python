@@ -37,18 +37,17 @@ steps:
       arguments: '${{ parameters.versionSpec }}'
 
   - script: |
-      sudo chmod -R +777 /opt/hostedtoolcache/PyPy/3.8.12/
+      chmod -R +777 /opt/hostedtoolcache/PyPy/3.8.12/
     displayName: Ensure PyPy pip is registered appropriately
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
-
 
   - pwsh: |
       python -c "import sys; print(sys.executable)"
-      python -m ensurepip --default-pip
+      python -m pip install pip --upgrade
     displayName: Ensure PyPy pip is registered appropriately
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
-  - script: |
+  - bash: |
       which pip
       echo $PATH
       echo $PYTHON_PATH
