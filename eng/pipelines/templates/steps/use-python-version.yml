@@ -37,11 +37,10 @@ steps:
       arguments: '${{ parameters.versionSpec }}'
 
   - bash: |
-      echo "Hello World"
       wget -q -P /tmp https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
       tar -x -C /opt -f /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
-      rm /tmp/pypy3.6-v7.3.3-linux64.tar.bz2
-      mv /opt/pypy3.6-v7.3.3-linux64 /opt/pypy3.8-manual
+      rm /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
+      mv /opt/pypy3.8-v7.3.7-linux64 /opt/pypy3.8-manual
     displayName: "Install PyPy3"
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
