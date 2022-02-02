@@ -41,7 +41,16 @@ steps:
       versionSpec: '2.7'
 
   - bash: |
-      ls -R /opt/hostedtoolcache/PyPy/3.8.12/
+      wget -q -P /tmp https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
+      tar -x -C /opt -f /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
+      rm /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
+      mv /opt/pypy3.8-v7.3.7-linux64 /opt/pypy3.8-manual
+    displayName: "Install PyPy3"
+    condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
+
+
+  - bash: |
+      ls -R /opt/pypy3.8-manual
     displayName: "Dump Contents"
 
   - pwsh: |
