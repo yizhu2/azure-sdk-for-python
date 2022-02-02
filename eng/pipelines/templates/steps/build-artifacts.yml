@@ -43,11 +43,6 @@ steps:
   - bash: |
       ls -R /opt/hostedtoolcache/PyPy/3.8.12/
     displayName: "Dump Contents"
-    condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
-
-  - pwsh: |
-      Get-ChildItem -r $(Agent.ToolsDirectory)
-    displayName: Interrogate directory contents
 
   - pwsh: |
       Get-ChildItem -Force -Recurse -Path /opt/hostedtoolcache/PyPy/3.8.12/x64/
