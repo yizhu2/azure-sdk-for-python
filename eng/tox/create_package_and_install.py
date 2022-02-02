@@ -240,18 +240,24 @@ if __name__ == "__main__":
                         # parse the specifier
                         req_name, req_specifier = parse_req(req)
 
+                        logging.info("Parsing of direct req {}, we saw {} and {}".format(req, req_name, req_specifier))
+
                         # if we have the package already present...
                         if req_name in installed_pkgs:
                             # ...do we need to install the new version? if the existing specifier matches, we're fine
                             if installed_pkgs[req_name] in req_specifier:
                                 addition_necessary = False
-
+                        logging.info("Parsing pip list {}".format(installed_pkgs))
                         if addition_necessary:
                             installation_additions.append(req)
+
 
                     if installation_additions:
                         download_command.extend(installation_additions)
                         download_command.extend(commands_options)
+
+                        logging.info("Firing pip download of azure requirement {}".format(req))
+                        logging.info("Full command set {}".format(download_command))
 
                         check_call(download_command, env=dict(os.environ, PIP_EXTRA_INDEX_URL=""))
                         additional_downloaded_reqs = [
