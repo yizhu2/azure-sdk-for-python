@@ -8,7 +8,7 @@
     "Agent": {
       "ubuntu-20.04": { "OSVmImage": "MMSUbuntu20.04", "Pool": "azsdk-pool-mms-ubuntu-2004-general" }
     },
-    "PythonVersion": [ "pypy3.8"],
+    "PythonVersion": [ "pypy3.7"],
     "CoverageArg": "--disablecov",
     "TestSamples": "false"
   },

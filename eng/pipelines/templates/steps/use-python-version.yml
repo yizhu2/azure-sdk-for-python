@@ -37,21 +37,21 @@ steps:
   #     arguments: '${{ parameters.versionSpec }}'
 
   - bash: |
-      wget -q -P /tmp https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
-      tar -x -C /opt -f /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
-      rm /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
-      mv /opt/pypy3.8-v7.3.7-linux64 /opt/pypy3.8-manual
+      wget -q -P /tmp https://downloads.python.org/pypy/pypy3.7-v7.3.7-linux64.tar.bz2
+      tar -x -C /opt -f /tmp/pypy3.7-v7.3.7-linux64.tar.bz2
+      rm /tmp/pypy3.7-v7.3.7-linux64.tar.bz2
+      mv /opt/pypy3.7-v7.3.7-linux64 /opt/pypy3.7-manual
     displayName: "Install PyPy3"
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
   - bash: |
-      ls -R /opt/pypy3.8-manual
+      ls -R /opt/pypy3.7-manual
     displayName: "Dump Contents"
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
   - script: |
-      chmod -R +777 /opt/pypy3.8-manual
-      echo "##vso[task.prependpath]/opt/pypy3.8-manual/bin"
+      chmod -R +777 /opt/pypy3.7-manual
+      echo "##vso[task.prependpath]/opt/pypy3.7-manual/bin"
     displayName: Ensure PyPy pip is registered appropriately
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
