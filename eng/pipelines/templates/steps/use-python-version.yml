@@ -29,12 +29,12 @@ steps:
 
   # UsePythonVersionTask is conditional based upon issue microsoft/azure-pipelines-tasks#15232.
   # Read submitted PR microsoft/azure-pipelines-tasks##15553 for further context as to the reasoning here.
-  - task: PythonScript@0
-    displayName: 'PyPy3 Specific Path Prepend'
-    condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
-    inputs:
-      scriptPath: 'scripts/devops_tasks/use_pypy_version.py'
-      arguments: '${{ parameters.versionSpec }}'
+  # - task: PythonScript@0
+  #   displayName: 'PyPy3 Specific Path Prepend'
+  #   condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
+  #   inputs:
+  #     scriptPath: 'scripts/devops_tasks/use_pypy_version.py'
+  #     arguments: '${{ parameters.versionSpec }}'
 
   - bash: |
       wget -q -P /tmp https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
@@ -50,7 +50,8 @@ steps:
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
   - script: |
-      chmod -R +777 /opt/hostedtoolcache/PyPy/3.8.12/
+      chmod -R +777 /opt/pypy3.8-manual
+      echo "##vso[task.prependpath]/opt/pypy3.8-manual/bin"
     displayName: Ensure PyPy pip is registered appropriately
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
 
@@ -59,6 +60,7 @@ steps:
       python -m pip install pip --upgrade
     displayName: Ensure PyPy pip is registered appropriately
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
+    continueOnError: true
 
   - bash: |
       which pip
