@@ -57,7 +57,7 @@ steps:
 
   - pwsh: |
       python -c "import sys; print(sys.executable)"
-      python -m pip install pip --upgrade
+      python -m ensurepip
     displayName: Ensure PyPy pip is registered appropriately
     condition: and(succeeded(), eq(variables.ManualInstallNecessary, 'true'))
     continueOnError: true
