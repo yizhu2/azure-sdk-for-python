@@ -34,31 +34,14 @@ steps:
       echo "##vso[build.addbuildtag]Scheduled"
     displayName: 'Tag scheduled builds'
     condition: and(eq(variables['Build.SourceBranchName'], variables['DefaultBranch']), eq(variables['Build.Reason'],'Schedule'))
-
   - task: UsePythonVersion@0
     displayName: 'Use Python 2.7'
     inputs:
       versionSpec: '2.7'
 
-  - bash: |
-      wget -q -P /tmp https://downloads.python.org/pypy/pypy3.8-v7.3.7-linux64.tar.bz2
-      tar -x -C /opt -f /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
-      rm /tmp/pypy3.8-v7.3.7-linux64.tar.bz2
-      mv /opt/pypy3.8-v7.3.7-linux64 /opt/pypy3.8-manual
-    displayName: "Install PyPy3"
-
-  - bash: |
-      ls -R /opt/pypy3.8-manual
-    displayName: "Dump Contents"
-
-  - pwsh: |
-      Get-ChildItem -Force -Recurse -Path /opt/hostedtoolcache/PyPy/3.8.12/x64/
-    displayName: Interrogate bin dir
-
   - script: |
       pip install -r eng/ci_tools.txt
     displayName: 'Prep Py2 Environment'
-
   - task: PythonScript@0
     displayName: 'Generate Python2 Applicable Namespace Packages'
     inputs:
@@ -73,7 +56,6 @@ steps:
   - script: |
       pip install -r eng/ci_tools.txt
     displayName: 'Prep Environment'
-
   - template: ../steps/set-dev-build.yml
     parameters:
       ServiceDirectory: ${{ parameters.ServiceDirectory }}
@@ -95,47 +77,43 @@ steps:
       scriptPath: 'scripts/devops_tasks/build_packages.py'
       arguments: '-d "$(Build.ArtifactStagingDirectory)" "$(TargetingString)" --service=${{parameters.ServiceDirectory}} --devbuild="$(SetDevVersion)"'
 
-  # - script: |
-  #     twine check $(Build.ArtifactStagingDirectory)/**/*.whl
-  #     twine check $(Build.ArtifactStagingDirectory)/**/*.zip
-  #   displayName: 'Verify Readme'
-
-  # - task: PythonScript@0
-  #   displayName: 'Generate Docs'
-  #   condition: and(succeededOrFailed(), ${{parameters.BuildDocs}})
-  #   inputs:
-  #     scriptPath: 'scripts/devops_tasks/setup_execute_tests.py'
-  #     arguments: >-
-  #       "$(TargetingString)" 
-  #       --service="${{ parameters.ServiceDirectory }}" 
-  #       --toxenv=sphinx
-
+  - script: |
+      twine check $(Build.ArtifactStagingDirectory)/**/*.whl
+      twine check $(Build.ArtifactStagingDirectory)/**/*.zip
+    displayName: 'Verify Readme'
+  - task: PythonScript@0
+    displayName: 'Generate Docs'
+    condition: and(succeededOrFailed(), ${{parameters.BuildDocs}})
+    inputs:
+      scriptPath: 'scripts/devops_tasks/setup_execute_tests.py'
+      arguments: >-
+        "$(TargetingString)" 
+        --service="${{ parameters.ServiceDirectory }}" 
+        --toxenv=sphinx
   # - template: /eng/pipelines/templates/steps/run_apistub.yml
   #   parameters:
   #     ServiceDirectory: ${{ parameters.ServiceDirectory }}
 
-  # - ${{ parameters.BeforePublishSteps }}
-
-  # - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-  #   displayName: 'Upload Package SBOM'
-  #   inputs:
-  #     BuildDropPath: $(Build.ArtifactStagingDirectory)
-
-  # - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-  #   displayName: 'Upload Documentation SBOM'
-  #   condition: and(succeeded(), ${{ parameters.BuildDocs }})
-  #   inputs:
-  #     BuildDropPath: $(Build.SourcesDirectory)/_docs
-
-
+  - ${{ parameters.BeforePublishSteps }}
 
   - template: /eng/common/pipelines/templates/steps/publish-artifact.yml
     parameters:
       ArtifactPath: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'packages'
 
-  # - template: /eng/common/pipelines/templates/steps/publish-artifact.yml
-  #   parameters:
-  #     ArtifactPath: '$(Build.SourcesDirectory)/_docs'
-  #     CustomCondition: ${{ parameters.BuildDocs }}
-  #     ArtifactName: 'documentation'
+  - template: /eng/common/pipelines/templates/steps/publish-artifact.yml
+    parameters:
+      ArtifactPath: '$(Build.SourcesDirectory)/_docs'
+      CustomCondition: ${{ parameters.BuildDocs }}
+      ArtifactName: 'documentation'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'Generate BOM'
+    condition: succeededOrFailed()
+    inputs:
+      BuildDropPath: $(Build.ArtifactStagingDirectory)
+
+  - template: /eng/common/pipelines/templates/steps/publish-artifact.yml
+    parameters:
+      ArtifactPath: '$(Build.ArtifactStagingDirectory)/_manifest'
+      ArtifactName: 'manifest'
