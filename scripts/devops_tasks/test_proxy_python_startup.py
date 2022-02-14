@@ -57,18 +57,26 @@ def start_test_proxy():
                 log = open("_proxy_log_{}.log".format(envname), "a")
                 proc = subprocess.Popen(
                     shlex.split('test-proxy --storage-location="{}" --urls {}'.format(REPO_ROOT, PROXY_URL)),
-                    stdout=log,
-                    stderr=log,
+                    capture_output=True
+                    # stdout=log,
+                    # stderr=log,
                 )
                 os.environ[TOOL_ENV_VAR] = str(proc.pid)
         else:
             print("Starting the test proxy container...")
 
-            proc = subprocess.Popen(shlex.split("docker container start " + CONTAINER_NAME))
-            proc.communicate()
-
         # Wait for the proxy server to become available
         check_proxy_availability()
 
+def invoke_test_proxy_version():
+    proc = subprocess.Popen(
+        shlex.split('test-proxy --version'),
+        capture_output=True
+        # stdout=log,
+        # stderr=log,
+    )
+    proc.communicate()
+
 if __name__ == "__main__":
     start_test_proxy()
+    invoke_test_proxy_version()
