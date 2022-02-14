@@ -56,7 +56,7 @@ def start_test_proxy():
                 envname = os.getenv("TOX_ENV_NAME", "default")
                 log = open("_proxy_log_{}.log".format(envname), "a")
                 proc = subprocess.Popen(
-                    shlex.split('test-proxy --storage-location="{}" --urls {}'.format(REPO_ROOT, PROXY_URL))
+                    shlex.split('test-proxy --storage-location="{}" --urls "{}"'.format(REPO_ROOT, PROXY_URL))
                     # stdout=log,
                     # stderr=log,
                 )
