@@ -23,5 +23,5 @@ jobs:
         displayName: 'Prep Environment'
 
       - pwsh: |
-          python $(Build.SourcesDirectory)/scripts/devops_tasks/setup_execute_tasks.py azure-core
+          python $(Build.SourcesDirectory)/scripts/devops_tasks/setup_execute_tests.py azure-core
         displayName: Check Invocation of Tox Pipeline
