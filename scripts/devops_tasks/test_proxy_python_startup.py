@@ -57,8 +57,8 @@ def start_test_proxy():
                 log = open("_proxy_log_{}.log".format(envname), "a")
                 proc = subprocess.Popen(
                     shlex.split('test-proxy --storage-location="{}" --urls "{}"'.format(REPO_ROOT, PROXY_URL))
-                    # stdout=log,
-                    # stderr=log,
+                    stdout=log,
+                    stderr=log,
                 )
                 os.environ[TOOL_ENV_VAR] = str(proc.pid)
         else:
@@ -78,4 +78,4 @@ def invoke_test_proxy_version():
 
 if __name__ == "__main__":
     start_test_proxy()
-    invoke_test_proxy_version()
+    
