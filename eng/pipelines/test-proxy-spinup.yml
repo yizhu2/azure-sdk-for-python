@@ -24,6 +24,7 @@ jobs:
       - pwsh: |
           cat $(Build.SourcesDirectory)/test-proxy.log
         displayName: dump output file
+        continueOnError: true
       - pwsh: |
           test-proxy --version
         displayName: Check direct invocation
@@ -47,6 +48,7 @@ jobs:
       - pwsh: |
           cat $(Build.SourcesDirectory)/test-proxy.log
         displayName: dump output file
+        continueOnError: true
       - pwsh: |
           test-proxy --version
         displayName: Check direct invocation
@@ -69,6 +71,7 @@ jobs:
       - pwsh: |
           cat $(Build.SourcesDirectory)/test-proxy.log
         displayName: dump output file
+        continueOnError: true
       - pwsh: |
           test-proxy --version
         displayName: Check direct invocation
