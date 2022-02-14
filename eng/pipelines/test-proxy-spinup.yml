@@ -21,6 +21,9 @@ jobs:
       - pwsh: |
           cat $(Build.SourcesDirectory)/test-proxy.log
         displayName: dump output file
+      - pwsh: |
+          test-proxy --version
+        displayName: Check direct invocation
 
   - job: 'linux2020tool'
     displayName: 'Linux Tool Run'
@@ -38,6 +41,9 @@ jobs:
       - pwsh: |
           cat $(Build.SourcesDirectory)/test-proxy.log
         displayName: dump output file
+      - pwsh: |
+          test-proxy --version
+        displayName: Check direct invocation
 
   - job: 'macos'
     displayName: 'Mac Tool Run'
@@ -54,3 +60,7 @@ jobs:
       - pwsh: |
           cat $(Build.SourcesDirectory)/test-proxy.log
         displayName: dump output file
+      - pwsh: |
+          test-proxy --version
+        displayName: Check direct invocation
+        
