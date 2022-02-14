@@ -56,7 +56,7 @@ def start_test_proxy():
                 envname = os.getenv("TOX_ENV_NAME", "default")
                 log = open("_proxy_log_{}.log".format(envname), "a")
                 proc = subprocess.Popen(
-                    shlex.split('test-proxy --storage-location="{}" --urls "{}"'.format(REPO_ROOT, PROXY_URL))
+                    shlex.split('test-proxy --storage-location="{}" --urls "{}"'.format(REPO_ROOT, PROXY_URL)),
                     stdout=log,
                     stderr=log,
                 )
@@ -66,15 +66,6 @@ def start_test_proxy():
 
         # Wait for the proxy server to become available
         check_proxy_availability()
-
-def invoke_test_proxy_version():
-    proc = subprocess.Popen(
-        shlex.split('test-proxy --version'),
-        capture_output=True
-        # stdout=log,
-        # stderr=log,
-    )
-    proc.communicate()
 
 if __name__ == "__main__":
     start_test_proxy()
