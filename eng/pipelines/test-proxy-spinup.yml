@@ -15,19 +15,29 @@ jobs:
         displayName: 'Use Python 3.9'
         inputs:
           versionSpec: '3.9'
+
       - pwsh: |
           pip install requests
         displayName: Install Requirements
+
       - template: /eng/common/testproxy/test-proxy-tool.yml
         parameters:
           runProxy: false
-      - pwsh: |
-          cat $(Build.SourcesDirectory)/test-proxy.log
-        displayName: dump output file
-        continueOnError: true
+
       - pwsh: |
           test-proxy --version
         displayName: Check direct invocation
+
+      - pwsh: |
+          python scripts/devops_tasks/test_proxy_python_startup.py
+        displayName: Spin the proxy from python
+        continueOnError: true
+
+      - pwsh: |
+          cat $(Build.SourcesDirectory)/_proxy_log_default.log
+        displayName: dump output file
+        continueOnError: true
+
 
   - job: 'linux2020tool'
     displayName: 'Linux Tool Run'
@@ -39,19 +49,28 @@ jobs:
         displayName: 'Use Python pypy3'
         inputs:
           versionSpec: 'pypy3'
+
       - pwsh: |
           pip install requests
         displayName: Install Requirements
+
       - template: /eng/common/testproxy/test-proxy-tool.yml
         parameters:
           runProxy: false
-      - pwsh: |
-          cat $(Build.SourcesDirectory)/test-proxy.log
-        displayName: dump output file
-        continueOnError: true
+
       - pwsh: |
           test-proxy --version
         displayName: Check direct invocation
+
+      - pwsh: |
+          python scripts/devops_tasks/test_proxy_python_startup.py
+        displayName: Spin the proxy from python
+        continueOnError: true
+
+      - pwsh: |
+          cat $(Build.SourcesDirectory)/_proxy_log_default.log
+        displayName: dump output file
+        continueOnError: true
 
   - job: 'macos'
     displayName: 'Mac Tool Run'
@@ -62,17 +81,25 @@ jobs:
         displayName: 'Use Python python 3.10'
         inputs:
           versionSpec: '3.10'
+
       - pwsh: |
           pip install requests
         displayName: Install Requirements
+
       - template: /eng/common/testproxy/test-proxy-tool.yml
         parameters:
           runProxy: false
-      - pwsh: |
-          cat $(Build.SourcesDirectory)/test-proxy.log
-        displayName: dump output file
-        continueOnError: true
+
       - pwsh: |
           test-proxy --version
         displayName: Check direct invocation
-        
+
+      - pwsh: |
+          python scripts/devops_tasks/test_proxy_python_startup.py
+        displayName: Spin the proxy from python
+        continueOnError: true
+
+      - pwsh: |
+          cat $(Build.SourcesDirectory)/_proxy_log_default.log
+        displayName: dump output file
+        continueOnError: true
