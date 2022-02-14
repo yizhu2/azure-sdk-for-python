@@ -1,0 +1,27 @@
+trigger: none
+
+variables:
+  PythonVersion: 'pypy3.7'
+  
+
+jobs:
+  - job: 'linux2020tool'
+    displayName: 'Check PyPy install and run'
+    pool:
+      name: azsdk-pool-mms-ubuntu-2004-general
+      vmImage: MMSUbuntu20.04
+    steps:
+      - template: /eng/pipelines/templates/steps/use-python-version.yml
+        parameters:
+          versionSpec: 'pypy3.7'
+
+      - script: |
+          python -m pip install pip==20.1
+          pip install -r eng/ci_tools.txt
+          pip --version
+          pip freeze
+        displayName: 'Prep Environment'
+
+      - pwsh: |
+          python $(Build.SourcesDirectory)/scripts/devops_tasks/setup_execute_tasks.py azure-core
+        displayName: Check Invocation of Tox Pipeline
