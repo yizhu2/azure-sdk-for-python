@@ -15,6 +15,9 @@ jobs:
         displayName: 'Use Python 3.9'
         inputs:
           versionSpec: '3.9'
+      - pwsh: |
+          pip install requests
+        displayName: Install Requirements
       - template: /eng/common/testproxy/test-proxy-tool.yml
         parameters:
           runProxy: false
@@ -35,6 +38,9 @@ jobs:
         displayName: 'Use Python pypy3'
         inputs:
           versionSpec: 'pypy3'
+      - pwsh: |
+          pip install requests
+        displayName: Install Requirements
       - template: /eng/common/testproxy/test-proxy-tool.yml
         parameters:
           runProxy: false
@@ -54,6 +60,9 @@ jobs:
         displayName: 'Use Python python 3.10'
         inputs:
           versionSpec: '3.10'
+      - pwsh: |
+          pip install requests
+        displayName: Install Requirements
       - template: /eng/common/testproxy/test-proxy-tool.yml
         parameters:
           runProxy: false
