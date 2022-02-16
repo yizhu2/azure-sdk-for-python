@@ -44,7 +44,7 @@
   .PARAMETER outputCacheFile
   Path to a file that the script will output all the validated links after running all checks.
   
-  .PARAMETER timoutSec
+  .PARAMETER timeoutSec
   The config of web request timeout second. Default to 15 second.
 
   .EXAMPLE
