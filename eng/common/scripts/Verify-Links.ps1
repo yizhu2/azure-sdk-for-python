@@ -220,14 +220,14 @@ function CheckLink ([System.Uri]$linkUri, $allowRetry=$true)
       $headRequestSucceeded = $true
       try {
         # Attempt HEAD request first
-        $response = Invoke-WebRequest -Uri $linkUri -Method HEAD -UserAgent $userAgent
+        $response = Invoke-WebRequest -Uri $linkUri -Method HEAD -UserAgent $userAgent -TimeoutSec 15
       }
       catch {
         $headRequestSucceeded = $false
       }
       if (!$headRequestSucceeded) {
         # Attempt a GET request if the HEAD request failed.
-        $response = Invoke-WebRequest -Uri $linkUri -Method GET -UserAgent $userAgent
+        $response = Invoke-WebRequest -Uri $linkUri -Method GET -UserAgent $userAgent -TimeoutSec 15
       }
       $statusCode = $response.StatusCode
       if ($statusCode -ne 200) {
@@ -328,7 +328,7 @@ function GetLinks([System.Uri]$pageUri)
 {
   if ($pageUri.Scheme.StartsWith("http")) {
     try {
-      $response = Invoke-WebRequest -Uri $pageUri -UserAgent $userAgent
+      $response = Invoke-WebRequest -Uri $pageUri -UserAgent $userAgent -TimeoutSec 15
       $content = $response.Content
 
       if ($pageUri.ToString().EndsWith(".md")) {
@@ -392,7 +392,7 @@ if ($inputCacheFile)
   $cacheContent = ""
   if ($inputCacheFile.StartsWith("http")) {
     try {
-      $response = Invoke-WebRequest -Uri $inputCacheFile
+      $response = Invoke-WebRequest -Uri $inputCacheFile -TimeoutSec 15
       $cacheContent = $response.Content
     }
     catch {
