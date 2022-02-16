@@ -43,6 +43,9 @@
 
   .PARAMETER outputCacheFile
   Path to a file that the script will output all the validated links after running all checks.
+  
+  .PARAMETER timoutSec
+  The config of web request timeout second. Default to 15 second.
 
   .EXAMPLE
   PS> .\Verify-Links.ps1 C:\README.md
@@ -67,7 +70,8 @@ param (
   [bool] $checkLinkGuidance = $false,
   [string] $userAgent,
   [string] $inputCacheFile,
-  [string] $outputCacheFile
+  [string] $outputCacheFile,
+  [string] $timeoutSec = 15
 )
 
 $ProgressPreference = "SilentlyContinue"; # Disable invoke-webrequest progress dialog
@@ -220,14 +224,14 @@ function CheckLink ([System.Uri]$linkUri, $allowRetry=$true)
       $headRequestSucceeded = $true
       try {
         # Attempt HEAD request first
-        $response = Invoke-WebRequest -Uri $linkUri -Method HEAD -UserAgent $userAgent -TimeoutSec 15
+        $response = Invoke-WebRequest -Uri $linkUri -Method HEAD -UserAgent $userAgent -TimeoutSec $timeoutSec
       }
       catch {
         $headRequestSucceeded = $false
       }
       if (!$headRequestSucceeded) {
         # Attempt a GET request if the HEAD request failed.
-        $response = Invoke-WebRequest -Uri $linkUri -Method GET -UserAgent $userAgent -TimeoutSec 15
+        $response = Invoke-WebRequest -Uri $linkUri -Method GET -UserAgent $userAgent -TimeoutSec $timeoutSec
       }
       $statusCode = $response.StatusCode
       if ($statusCode -ne 200) {
@@ -328,7 +332,7 @@ function GetLinks([System.Uri]$pageUri)
 {
   if ($pageUri.Scheme.StartsWith("http")) {
     try {
-      $response = Invoke-WebRequest -Uri $pageUri -UserAgent $userAgent -TimeoutSec 15
+      $response = Invoke-WebRequest -Uri $pageUri -UserAgent $userAgent -TimeoutSec $timeoutSec
       $content = $response.Content
 
       if ($pageUri.ToString().EndsWith(".md")) {
@@ -392,7 +396,7 @@ if ($inputCacheFile)
   $cacheContent = ""
   if ($inputCacheFile.StartsWith("http")) {
     try {
-      $response = Invoke-WebRequest -Uri $inputCacheFile -TimeoutSec 15
+      $response = Invoke-WebRequest -Uri $inputCacheFile -TimeoutSec $timeoutSec
       $cacheContent = $response.Content
     }
     catch {
