@@ -8,11 +8,11 @@
 from typing import TYPE_CHECKING
 import warnings
 
-from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import HttpRequest, HttpResponse
 
-from .. import models as _models
+from .. import models
 
 if TYPE_CHECKING:
     # pylint: disable=unused-import,ungrouped-imports
@@ -35,7 +35,7 @@ class QueryOperations(object):
     :param deserializer: An object model deserializer.
     """
 
-    models = _models
+    models = models
 
     def __init__(self, client, config, serializer, deserializer):
         self._client = client
@@ -45,11 +45,11 @@ class QueryOperations(object):
 
     def query_twins(
         self,
-        query_specification,  # type: "_models.QuerySpecification"
-        query_twins_options=None,  # type: Optional["_models.QueryTwinsOptions"]
+        query_specification,  # type: "models.QuerySpecification"
+        query_twins_options=None,  # type: Optional["models.QueryTwinsOptions"]
         **kwargs  # type: Any
     ):
-        # type: (...) -> "_models.QueryResult"
+        # type: (...) -> "models.QueryResult"
         """Executes a query that allows traversing relationships and filtering by property values.
         Status codes:
 
@@ -59,9 +59,9 @@ class QueryOperations(object):
 
           * BadRequest - The continuation token is invalid.
           * SqlQueryError - The query contains some errors.
-
-        * 429 Too Many Requests
-
+          * TimeoutError - The query execution timed out after 60 seconds. Try simplifying the query or
+        adding conditions to reduce the result size.
+          * 429 Too Many Requests
           * QuotaReachedError - The maximum query rate limit has been reached.
 
         :param query_specification: The query specification to execute.
@@ -73,10 +73,8 @@ class QueryOperations(object):
         :rtype: ~azure.digitaltwins.core.models.QueryResult
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["_models.QueryResult"]
-        error_map = {
-            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
-        }
+        cls = kwargs.pop('cls', None)  # type: ClsType["models.QueryResult"]
+        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
         error_map.update(kwargs.pop('error_map', {}))
         
         _traceparent = None
@@ -86,9 +84,8 @@ class QueryOperations(object):
             _traceparent = query_twins_options.traceparent
             _tracestate = query_twins_options.tracestate
             _max_items_per_page = query_twins_options.max_items_per_page
-        api_version = self._config.api_version
+        api_version = "2021-06-30-preview"
         content_type = kwargs.pop("content_type", "application/json")
-        accept = "application/json"
 
         # Construct URL
         url = self.query_twins.metadata['url']  # type: ignore
@@ -106,18 +103,19 @@ class QueryOperations(object):
         if _max_items_per_page is not None:
             header_parameters['max-items-per-page'] = self._serialize.header("max_items_per_page", _max_items_per_page, 'int')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+        header_parameters['Accept'] = 'application/json'
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         body_content = self._serialize.body(query_specification, 'QuerySpecification')
         body_content_kwargs['content'] = body_content
         request = self._client.post(url, query_parameters, header_parameters, **body_content_kwargs)
+
         pipeline_response = self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error)
 
         response_headers = {}

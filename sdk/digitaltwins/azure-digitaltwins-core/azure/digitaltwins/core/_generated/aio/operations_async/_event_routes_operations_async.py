@@ -9,11 +9,11 @@ from typing import Any, AsyncIterable, Callable, Dict, Generic, Optional, TypeVa
 import warnings
 
 from azure.core.async_paging import AsyncItemPaged, AsyncList
-from azure.core.exceptions import ClientAuthenticationError, HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
+from azure.core.exceptions import HttpResponseError, ResourceExistsError, ResourceNotFoundError, map_error
 from azure.core.pipeline import PipelineResponse
 from azure.core.pipeline.transport import AsyncHttpResponse, HttpRequest
 
-from ... import models as _models
+from ... import models
 
 T = TypeVar('T')
 ClsType = Optional[Callable[[PipelineResponse[HttpRequest, AsyncHttpResponse], T, Dict[str, Any]], Any]]
@@ -32,7 +32,7 @@ class EventRoutesOperations:
     :param deserializer: An object model deserializer.
     """
 
-    models = _models
+    models = models
 
     def __init__(self, client, config, serializer, deserializer) -> None:
         self._client = client
@@ -42,9 +42,9 @@ class EventRoutesOperations:
 
     def list(
         self,
-        event_routes_list_options: Optional["_models.EventRoutesListOptions"] = None,
+        event_routes_list_options: Optional["models.EventRoutesListOptions"] = None,
         **kwargs
-    ) -> AsyncIterable["_models.EventRouteCollection"]:
+    ) -> AsyncIterable["models.EventRouteCollection"]:
         """Retrieves all event routes.
         Status codes:
 
@@ -58,10 +58,8 @@ class EventRoutesOperations:
         :rtype: ~azure.core.async_paging.AsyncItemPaged[~azure.digitaltwins.core.models.EventRouteCollection]
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["_models.EventRouteCollection"]
-        error_map = {
-            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
-        }
+        cls = kwargs.pop('cls', None)  # type: ClsType["models.EventRouteCollection"]
+        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
         error_map.update(kwargs.pop('error_map', {}))
         
         _traceparent = None
@@ -71,8 +69,7 @@ class EventRoutesOperations:
             _traceparent = event_routes_list_options.traceparent
             _tracestate = event_routes_list_options.tracestate
             _max_items_per_page = event_routes_list_options.max_items_per_page
-        api_version = self._config.api_version
-        accept = "application/json"
+        api_version = "2021-06-30-preview"
 
         def prepare_request(next_link=None):
             # Construct headers
@@ -83,7 +80,7 @@ class EventRoutesOperations:
                 header_parameters['tracestate'] = self._serialize.header("tracestate", _tracestate, 'str')
             if _max_items_per_page is not None:
                 header_parameters['max-items-per-page'] = self._serialize.header("max_items_per_page", _max_items_per_page, 'int')
-            header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+            header_parameters['Accept'] = 'application/json'
 
             if not next_link:
                 # Construct URL
@@ -113,7 +110,7 @@ class EventRoutesOperations:
             response = pipeline_response.http_response
 
             if response.status_code not in [200]:
-                error = self._deserialize(_models.ErrorResponse, response)
+                error = self._deserialize(models.ErrorResponse, response)
                 map_error(status_code=response.status_code, response=response, error_map=error_map)
                 raise HttpResponseError(response=response, model=error)
 
@@ -127,9 +124,9 @@ class EventRoutesOperations:
     async def get_by_id(
         self,
         id: str,
-        event_routes_get_by_id_options: Optional["_models.EventRoutesGetByIdOptions"] = None,
+        event_routes_get_by_id_options: Optional["models.EventRoutesGetByIdOptions"] = None,
         **kwargs
-    ) -> "_models.DigitalTwinsEventRoute":
+    ) -> "models.DigitalTwinsEventRoute":
         """Retrieves an event route.
         Status codes:
 
@@ -148,10 +145,8 @@ class EventRoutesOperations:
         :rtype: ~azure.digitaltwins.core.models.DigitalTwinsEventRoute
         :raises: ~azure.core.exceptions.HttpResponseError
         """
-        cls = kwargs.pop('cls', None)  # type: ClsType["_models.DigitalTwinsEventRoute"]
-        error_map = {
-            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
-        }
+        cls = kwargs.pop('cls', None)  # type: ClsType["models.DigitalTwinsEventRoute"]
+        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
         error_map.update(kwargs.pop('error_map', {}))
         
         _traceparent = None
@@ -159,8 +154,7 @@ class EventRoutesOperations:
         if event_routes_get_by_id_options is not None:
             _traceparent = event_routes_get_by_id_options.traceparent
             _tracestate = event_routes_get_by_id_options.tracestate
-        api_version = self._config.api_version
-        accept = "application/json"
+        api_version = "2021-06-30-preview"
 
         # Construct URL
         url = self.get_by_id.metadata['url']  # type: ignore
@@ -179,7 +173,7 @@ class EventRoutesOperations:
             header_parameters['traceparent'] = self._serialize.header("traceparent", _traceparent, 'str')
         if _tracestate is not None:
             header_parameters['tracestate'] = self._serialize.header("tracestate", _tracestate, 'str')
-        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
+        header_parameters['Accept'] = 'application/json'
 
         request = self._client.get(url, query_parameters, header_parameters)
         pipeline_response = await self._client._pipeline.run(request, stream=False, **kwargs)
@@ -187,7 +181,7 @@ class EventRoutesOperations:
 
         if response.status_code not in [200]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error)
 
         deserialized = self._deserialize('DigitalTwinsEventRoute', pipeline_response)
@@ -201,8 +195,8 @@ class EventRoutesOperations:
     async def add(
         self,
         id: str,
-        event_route: Optional["_models.DigitalTwinsEventRoute"] = None,
-        event_routes_add_options: Optional["_models.EventRoutesAddOptions"] = None,
+        event_route: Optional["models.DigitalTwinsEventRoute"] = None,
+        event_routes_add_options: Optional["models.EventRoutesAddOptions"] = None,
         **kwargs
     ) -> None:
         """Adds or replaces an event route.
@@ -229,9 +223,7 @@ class EventRoutesOperations:
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {
-            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
-        }
+        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
         error_map.update(kwargs.pop('error_map', {}))
         
         _traceparent = None
@@ -239,9 +231,8 @@ class EventRoutesOperations:
         if event_routes_add_options is not None:
             _traceparent = event_routes_add_options.traceparent
             _tracestate = event_routes_add_options.tracestate
-        api_version = self._config.api_version
+        api_version = "2021-06-30-preview"
         content_type = kwargs.pop("content_type", "application/json")
-        accept = "application/json"
 
         # Construct URL
         url = self.add.metadata['url']  # type: ignore
@@ -261,7 +252,6 @@ class EventRoutesOperations:
         if _tracestate is not None:
             header_parameters['tracestate'] = self._serialize.header("tracestate", _tracestate, 'str')
         header_parameters['Content-Type'] = self._serialize.header("content_type", content_type, 'str')
-        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         body_content_kwargs = {}  # type: Dict[str, Any]
         if event_route is not None:
@@ -270,12 +260,13 @@ class EventRoutesOperations:
             body_content = None
         body_content_kwargs['content'] = body_content
         request = self._client.put(url, query_parameters, header_parameters, **body_content_kwargs)
+
         pipeline_response = await self._client._pipeline.run(request, stream=False, **kwargs)
         response = pipeline_response.http_response
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error)
 
         if cls:
@@ -286,7 +277,7 @@ class EventRoutesOperations:
     async def delete(
         self,
         id: str,
-        event_routes_delete_options: Optional["_models.EventRoutesDeleteOptions"] = None,
+        event_routes_delete_options: Optional["models.EventRoutesDeleteOptions"] = None,
         **kwargs
     ) -> None:
         """Deletes an event route.
@@ -308,9 +299,7 @@ class EventRoutesOperations:
         :raises: ~azure.core.exceptions.HttpResponseError
         """
         cls = kwargs.pop('cls', None)  # type: ClsType[None]
-        error_map = {
-            401: ClientAuthenticationError, 404: ResourceNotFoundError, 409: ResourceExistsError
-        }
+        error_map = {404: ResourceNotFoundError, 409: ResourceExistsError}
         error_map.update(kwargs.pop('error_map', {}))
         
         _traceparent = None
@@ -318,8 +307,7 @@ class EventRoutesOperations:
         if event_routes_delete_options is not None:
             _traceparent = event_routes_delete_options.traceparent
             _tracestate = event_routes_delete_options.tracestate
-        api_version = self._config.api_version
-        accept = "application/json"
+        api_version = "2021-06-30-preview"
 
         # Construct URL
         url = self.delete.metadata['url']  # type: ignore
@@ -338,7 +326,6 @@ class EventRoutesOperations:
             header_parameters['traceparent'] = self._serialize.header("traceparent", _traceparent, 'str')
         if _tracestate is not None:
             header_parameters['tracestate'] = self._serialize.header("tracestate", _tracestate, 'str')
-        header_parameters['Accept'] = self._serialize.header("accept", accept, 'str')
 
         request = self._client.delete(url, query_parameters, header_parameters)
         pipeline_response = await self._client._pipeline.run(request, stream=False, **kwargs)
@@ -346,7 +333,7 @@ class EventRoutesOperations:
 
         if response.status_code not in [204]:
             map_error(status_code=response.status_code, response=response, error_map=error_map)
-            error = self._deserialize(_models.ErrorResponse, response)
+            error = self._deserialize(models.ErrorResponse, response)
             raise HttpResponseError(response=response, model=error)
 
         if cls:
